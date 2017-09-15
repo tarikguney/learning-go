@@ -19,14 +19,14 @@ func main() {
 			log.Print(err)
 			continue
 		}
-		handleConn(conn)
+		// Now handleConn does not exit, but it is executed concurrently
+		// so the loop continues to accept connections and handle.
+		// don't forget that this is a inifitely running server.
+		go handleConn(conn)
 	}
 }
 
 func handleConn(c net.Conn) {
-	// This continously write the current date/time to the stream.
-	// But since it is sequential, it doesn't allow listener.Accept() other
-	// connection requests to handle.
 	for {
 		_, err := io.WriteString(c, time.Now().Format("15:04:05\n"))
 		if err != nil {
